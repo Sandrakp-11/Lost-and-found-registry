@@ -1,12 +1,15 @@
 package com.lostfound.dao;
 
-import com.lostfound.dto.ItemDTO;
 import java.util.List;
+import com.lostfound.dto.Item;
 
 public interface ItemDAO {
 
-    boolean addItem(ItemDTO item);
-    List<ItemDTO> getAllItems();
-    List<ItemDTO> getItemsByStatus(String status);
-    boolean deleteItem(int itemId);
+    void addItem(Item item);
+
+    List<Item> getAllItems();
+
+    void updateItemStatus(int id, String status);
+
+    void deleteItem(int id);
 }

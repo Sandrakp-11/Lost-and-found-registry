@@ -1,86 +1,57 @@
 package com.lostfound.daoimpl;
 
-import com.lostfound.dao.ItemDAO;
-import com.lostfound.dto.ItemDTO;
-import com.lostfound.util.DBConnection;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lostfound.dao.ItemDAO;
+import com.lostfound.dto.Item;
+import com.lostfound.util.DBConnection;
+
 public class ItemDAOImpl implements ItemDAO {
 
     @Override
-    public boolean addItem(ItemDTO item) {
-        String sql = "INSERT INTO items (item_name, description, category, status, location, date_reported) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+    public void addItem(Item item) {
+        try {
+            Connection con = DBConnection.getConnection();
+            String sql = "INSERT INTO items(item_name, description, location, status) VALUES(?,?,?,?)";
 
+            PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, item.getItemName());
             ps.setString(2, item.getDescription());
-            ps.setString(3, item.getCategory());
+            ps.setString(3, item.getLocation());
             ps.setString(4, item.getStatus());
-            ps.setString(5, item.getLocation());
-            ps.setDate(6, item.getDateReported());
 
-            return ps.executeUpdate() > 0;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public List<ItemDTO> getAllItems() {
-        List<ItemDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM items";
-
-        try (Connection con = DBConnection.getConnection();
-             Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-
-            while (rs.next()) {
-                ItemDTO item = new ItemDTO();
-                item.setItemId(rs.getInt("item_id"));
-                item.setItemName(rs.getString("item_name"));
-                item.setDescription(rs.getString("description"));
-                item.setCategory(rs.getString("category"));
-                item.setStatus(rs.getString("status"));
-                item.setLocation(rs.getString("location"));
-                item.setDateReported(rs.getDate("date_reported"));
-                list.add(item);
-            }
+            ps.executeUpdate();
+            con.close();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return list;
     }
 
     @Override
-    public List<ItemDTO> getItemsByStatus(String status) {
-        List<ItemDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM items WHERE status = ?";
+    public List<Item> getAllItems() {
+        List<Item> list = new ArrayList<>();
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try {
+            Connection con = DBConnection.getConnection();
+            String sql = "SELECT * FROM items";
 
-            ps.setString(1, status);
+            PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                ItemDTO item = new ItemDTO();
-                item.setItemId(rs.getInt("item_id"));
-                item.setItemName(rs.getString("item_name"));
-                item.setDescription(rs.getString("description"));
-                item.setCategory(rs.getString("category"));
-                item.setStatus(rs.getString("status"));
-                item.setLocation(rs.getString("location"));
-                item.setDateReported(rs.getDate("date_reported"));
+                Item item = new Item(
+                        rs.getInt("id"),
+                        rs.getString("item_name"),
+                        rs.getString("description"),
+                        rs.getString("location"),
+                        rs.getString("status")
+                );
                 list.add(item);
             }
+            con.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,18 +60,37 @@ public class ItemDAOImpl implements ItemDAO {
     }
 
     @Override
-    public boolean deleteItem(int itemId) {
-        String sql = "DELETE FROM items WHERE item_id = ?";
+    public void updateItemStatus(int id, String status) {
+        try {
+            Connection con = DBConnection.getConnection();
+            String sql = "UPDATE items SET status=? WHERE id=?";
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, status);
+            ps.setInt(2, id);
 
-            ps.setInt(1, itemId);
-            return ps.executeUpdate() > 0;
+            ps.executeUpdate();
+            con.close();
 
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+        }
+    }
+
+    @Override
+    public void deleteItem(int id) {
+        try {
+            Connection con = DBConnection.getConnection();
+            String sql = "DELETE FROM items WHERE id=?";
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, id);
+
+            ps.executeUpdate();
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
