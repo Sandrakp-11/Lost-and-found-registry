@@ -19,6 +19,7 @@ public class MainApp {
         	System.out.println("4. Claim Item");
         	System.out.println("5. Delete Item");
         	System.out.println("6. Exit");
+        	System.out.print("Enter choice: ");
 
 
             int choice = sc.nextInt();
