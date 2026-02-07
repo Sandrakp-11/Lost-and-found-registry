@@ -1,90 +1,69 @@
 package com.lostfound.main;
 
+import java.util.Scanner;
 import com.lostfound.dto.Item;
 import com.lostfound.service.ItemService;
-
-import java.util.Scanner;
 
 public class MainApp {
 
     public static void main(String[] args) {
 
         ItemService service = new ItemService();
-        Scanner sc = new Scanner(System.in);
 
-        while (true) {
-        	System.out.println("1. Report Lost Item");
-        	System.out.println("2. Report Found Item");
-        	System.out.println("3. View All Items");
-        	System.out.println("4. Claim Item");
-        	System.out.println("5. Delete Item");
-        	System.out.println("6. Exit");
-        	System.out.print("Enter choice: ");
+        try (Scanner sc = new Scanner(System.in)) {
 
+            while (true) {
+                System.out.println("\n--- LOST & FOUND REGISTRY ---");
+                System.out.println("1. Report Lost Item");
+                System.out.println("2. View All Items");
+                System.out.println("3. Claim Item");
+                System.out.println("4. Delete Item");
+                System.out.println("5. Exit");
 
-            int choice = sc.nextInt();
+                int choice = sc.nextInt();
+                sc.nextLine(); // 🔴 IMPORTANT: clears buffer
 
-            switch (choice) {
+                switch (choice) {
+                    case 1:
+                        System.out.print("Item Name: ");
+                        String name = sc.nextLine();
 
-            case 1: // Report LOST
-                sc.nextLine();
-                System.out.print("Item Name: ");
-                String lostName = sc.nextLine();
-                System.out.print("Description: ");
-                String lostDesc = sc.nextLine();
-                System.out.print("Location: ");
-                String lostLoc = sc.nextLine();
+                        System.out.print("Description: ");
+                        String desc = sc.nextLine();
 
-                service.reportItem(new Item(lostName, lostDesc, lostLoc, "LOST"));
-                System.out.println("Lost item reported successfully.");
-                break;
+                        System.out.print("Location: ");
+                        String loc = sc.nextLine();
 
-            case 2: // Report FOUND
-                sc.nextLine();
-                System.out.print("Item Name: ");
-                String foundName = sc.nextLine();
-                System.out.print("Description: ");
-                String foundDesc = sc.nextLine();
-                System.out.print("Location: ");
-                String foundLoc = sc.nextLine();
+                        service.reportItem(new Item(name, desc, loc, "LOST"));
+                        break;
 
-                service.reportItem(new Item(foundName, foundDesc, foundLoc, "FOUND"));
-                System.out.println("Found item reported successfully.");
-                break;
+                    case 2:
+                        service.viewItems().forEach(i ->
+                            System.out.println(
+                                i.getId() + " | " +
+                                i.getItemName() + " | " +
+                                i.getDescription() + " | " +
+                                i.getLocation() + " | " +
+                                i.getStatus()
+                            )
+                        );
+                        break;
 
-            case 3: // View all
-                service.viewItems().forEach(i ->
-                    System.out.println(
-                        i.getId() + " | " +
-                        i.getItemName() + " | " +
-                        i.getDescription() + " | " +
-                        i.getLocation() + " | " +
-                        i.getStatus()
-                    )
-                );
-                break;
+                    case 3:
+                        System.out.print("Enter Item ID to claim: ");
+                        service.claimItem(sc.nextInt());
+                        break;
 
-            case 4: // Claim
-                System.out.print("Enter Item ID to claim: ");
-                int id = sc.nextInt();
-                service.claimItem(id);
-                break;
+                    case 4:
+                        System.out.print("Enter Item ID to delete: ");
+                        service.removeItem(sc.nextInt());
+                        break;
 
-            case 5: // Delete
-                System.out.print("Enter Item ID to delete: ");
-                int delId = sc.nextInt();
-                service.removeItem(delId);
-                break;
-
-            case 6:
-                System.out.println("Exiting system.");
-                sc.close();
-                System.exit(0);
-
-            default:
-                System.out.println("Invalid choice.");
-        }
-
+                    case 5:
+                        System.out.println("Exiting...");
+                        return; // exits loop & closes scanner
+                }
+            }
         }
     }
-}  
+}
