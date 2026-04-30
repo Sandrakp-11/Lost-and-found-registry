@@ -11,7 +11,7 @@ public class ItemService {
     private ItemDAO dao = new ItemDAOImpl();
 
     public void reportItem(Item item) {
-        if (item.getItemName() == null || item.getItemName().isEmpty()) {
+        if (item.getItemName() == null || item.getItemName().trim().isEmpty()) {
             System.out.println("Item name cannot be empty");
             return;
         }

@@ -8,10 +8,8 @@ public class Item {
     private String location;
     private String status;
 
-    // Default constructor
     public Item() {}
 
-    // Constructor without id (for insert)
     public Item(String itemName, String description, String location, String status) {
         this.itemName = itemName;
         this.description = description;
@@ -19,7 +17,6 @@ public class Item {
         this.status = status;
     }
 
-    // Constructor with id
     public Item(int id, String itemName, String description, String location, String status) {
         this.id = id;
         this.itemName = itemName;
@@ -28,7 +25,6 @@ public class Item {
         this.status = status;
     }
 
-    // Getters and Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -44,4 +40,3 @@ public class Item {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 }
-
